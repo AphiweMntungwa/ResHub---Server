@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ResHub.Data;
+using ResHub.Services.Implementations;
+using ResHub.Services.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -23,6 +25,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register your services
+builder.Services.AddScoped<IEventService, EventService>();
 
 var app = builder.Build();
 

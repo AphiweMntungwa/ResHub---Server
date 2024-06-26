@@ -22,7 +22,6 @@ namespace ResHub.Models
         public DateTime DateOfEvent { get; set; }
         public ICollection<EventResidence>? EventResidences { get; set; }
 
-
         // Constructor to initialize fields
         public Events(string eventName, EventTypes type, DateTime dateOfEvent)
         {
