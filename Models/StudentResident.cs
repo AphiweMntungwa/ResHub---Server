@@ -1,17 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ResHub.Models
 {
-    public class StudentResident
+    public class StudentResident : IdentityUser
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public string StudentNumber { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string UserName { get; set; }
         public string? RoomNumber { get; set; }
 
 
@@ -26,7 +23,6 @@ namespace ResHub.Models
             StudentNumber = studentNumber ?? throw new ArgumentNullException(nameof(studentNumber));
             FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
             LastName = lastName ?? throw new ArgumentNullException(nameof(lastName));
-            UserName = userName ?? throw new ArgumentNullException(nameof(userName));
         }
     }
 }

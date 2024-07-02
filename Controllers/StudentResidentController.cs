@@ -32,7 +32,7 @@ namespace ResHub.Controllers
 
         // GET api/<StudentResidentController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<StudentResident>> Get(int id)
+        public async Task<ActionResult<StudentResident>> Get(string id)
         {
             var studentResident = await _context.Residents
                                                 .Include(r => r.Residence)

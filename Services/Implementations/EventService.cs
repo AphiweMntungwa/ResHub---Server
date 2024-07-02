@@ -36,10 +36,9 @@ namespace ResHub.Services.Implementations
                     };
                     _context.EventResidents.Add(eventResidence);
                 }
-
-                await _context.SaveChangesAsync();
             }
 
+            await _context.SaveChangesAsync();
             return newEvent;
         }
     }
