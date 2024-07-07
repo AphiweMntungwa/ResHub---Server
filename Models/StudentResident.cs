@@ -16,13 +16,17 @@ namespace ResHub.Models
         public int? ResidenceId { get; set; }
         public Residence? Residence { get; set; }
 
+        public StudentResident() { }
 
         // Constructor initializing all non-nullable properties
-        public StudentResident(string studentNumber, string firstName, string lastName, string userName)
+        public StudentResident(string studentNumber, string firstName, string lastName, string email, int resId, string roomNo)
         {
             StudentNumber = studentNumber ?? throw new ArgumentNullException(nameof(studentNumber));
             FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
             LastName = lastName ?? throw new ArgumentNullException(nameof(lastName));
+            Email = email;
+            ResidenceId = resId;
+            RoomNumber = roomNo;
         }
     }
 }
