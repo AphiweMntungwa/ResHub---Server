@@ -10,7 +10,7 @@ namespace ResHub.Models
         public int ResId { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
-        public string Capacity { get; set; }
+        public int Capacity { get; set; }
 
         // Nullable reference types
         public string? BusAdmin { get; set; }
@@ -21,11 +21,11 @@ namespace ResHub.Models
         public ICollection<StudentResident>? StudentResidents { get; set; }
         public ICollection<EventResidence>? EventResidences { get; set; }
 
-        public Residence(string name, string address, string capacity)
+        public Residence(string name, string address, int capacity)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Address = address ?? throw new ArgumentNullException(nameof(address));
-            Capacity = capacity ?? throw new ArgumentNullException(nameof(capacity));
+            Capacity = capacity;
         }
     }
 }

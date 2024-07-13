@@ -20,6 +20,7 @@ builder.Services.AddControllers()
 builder.Services.AddIdentity<StudentResident, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
+    options.User.RequireUniqueEmail = true;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();

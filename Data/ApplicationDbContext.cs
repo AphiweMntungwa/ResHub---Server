@@ -1,25 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ResHub.Models;
 using System.Xml;
 
 namespace ResHub.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<StudentResident>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
            : base(options)
         {
         }
 
-        public DbSet<StudentResident> Residents { get; set; }
         public DbSet<Residence> Residence { get; set; }
         public DbSet<Events> Events { get; set; }   
         public DbSet<EventResidence> EventResidents { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<StudentResident>()
-                .HasIndex(sr => sr.StudentNumber)
-                .IsUnique();
+            base.OnModelCreating(modelBuilder);
+            //modelBuilder.Entity<StudentResident>()
+            //    .HasIndex(sr => sr.StudentNumber)
+            //    .IsUnique();
 
             // Configuring the many-to-many relationship
             modelBuilder.Entity<EventResidence>()

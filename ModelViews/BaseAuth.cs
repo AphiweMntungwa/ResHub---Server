@@ -16,11 +16,15 @@ namespace ResHub.ModelViews
         [Required]
         public string LastName { get; set; }
 
-        protected BaseAuth(string email, string firstName, string lastName)
+        [Required]
+        public string UserName { get; set; }
+
+        protected BaseAuth(string email, string firstName, string lastName, string userName)
         {
             Email = email;
             FirstName = firstName;
             LastName = lastName;
+            UserName = userName;
         }
 
         public async Task<bool> UserExists(UserManager<StudentResident> userManager)

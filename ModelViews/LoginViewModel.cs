@@ -5,7 +5,7 @@ namespace ResHub.ModelViews
     public class LoginViewModel : BaseAuth
     {
         public LoginViewModel(string email, string password, bool rememberMe)
-            : base(email, string.Empty, string.Empty)
+            : base(email, string.Empty, string.Empty, email)
         {
             Password = password;
             RememberMe = rememberMe;

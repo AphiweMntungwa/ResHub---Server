@@ -29,7 +29,7 @@ namespace ResHub.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StudentResident>>> Get()
         {
-            var residents = await _context.Residents
+            var residents = await _context.Users
                                         .Include(r => r.Residence)
                                         .ToListAsync();
 
@@ -40,7 +40,7 @@ namespace ResHub.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StudentResident>> Get(string id)
         {
-            var studentResident = await _context.Residents
+            var studentResident = await _context.Users
                                                 .Include(r => r.Residence)
                                                 .FirstOrDefaultAsync(r => r.Id == id);
 
@@ -62,7 +62,7 @@ namespace ResHub.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new StudentResident(model.StudentNumber, model.FirstName, model.LastName, model.Email, model.ResidenceId, model.RoomNumber);
+            var user = new StudentResident(model.StudentNumber, model.FirstName, model.LastName, model.Email, model.UserName, model.ResidenceId, model.RoomNumber);
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -132,7 +132,7 @@ namespace ResHub.Controllers
 
         private bool StudentResidentExists(string id)
         {
-            return _context.Residents.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
 
         // PUT api/<StudentResidentController>/5

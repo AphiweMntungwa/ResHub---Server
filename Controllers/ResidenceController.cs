@@ -41,6 +41,23 @@ namespace ResHub.Controllers
             }
 
             return Ok(studentResident);
+        } 
+        
+        // GET api/<ResidenceController>/5
+        [HttpGet("name/{id}")]
+        public async Task<ActionResult<StudentResident>> GetName(int id)
+        {
+            var residenceName = await _context.Residence
+                                   .Where(r => r.ResId == id)
+                                   .Select(r => r.Name)
+                                   .FirstOrDefaultAsync();
+
+            if (residenceName == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(residenceName);
         }
 
         // POST: api/Residence

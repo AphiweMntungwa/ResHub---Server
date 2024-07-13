@@ -5,8 +5,8 @@ namespace ResHub.Models
 {
     public class RegisterViewModel : BaseAuth
     {
-        public RegisterViewModel(string email, string firstName, string lastName, string studentNumber, int residenceId, string roomNumber, string password)
-            : base(email, firstName, lastName)
+        public RegisterViewModel(string email, string firstName, string lastName, string studentNumber, string userName, int residenceId, string roomNumber, string password)
+            : base(email, firstName, lastName, userName)
         {
             StudentNumber = studentNumber;
             ResidenceId = residenceId;
