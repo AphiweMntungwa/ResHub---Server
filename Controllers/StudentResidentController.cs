@@ -101,6 +101,10 @@ namespace ResHub.Controllers
             {
                 return Forbid();
             }
+            if(result.IsNotAllowed)
+            {
+                return Unauthorized("Wrong Credentials");
+            }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return BadRequest(ModelState);

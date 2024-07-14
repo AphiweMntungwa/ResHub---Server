@@ -6,17 +6,24 @@ namespace ResHub.Models
     public class RegisterViewModel : BaseAuth
     {
         public RegisterViewModel(string email, string firstName, string lastName, string studentNumber, string userName, int residenceId, string roomNumber, string password)
-            : base(email, firstName, lastName, userName)
+            : base(email, password)
         {
             StudentNumber = studentNumber;
             ResidenceId = residenceId;
             RoomNumber = roomNumber;
-            Password = password;
+            FirstName = firstName;
+            LastName = lastName;
+            UserName = userName;
         }
 
         [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string FirstName { get; set; }
+
+        [Required]
+        public string LastName { get; set; }
+
+        [Required]
+        public string UserName { get; set; }
 
         [Required]
         public string StudentNumber { get; set; }
