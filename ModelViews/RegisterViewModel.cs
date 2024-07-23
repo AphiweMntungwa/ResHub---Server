@@ -1,4 +1,5 @@
-﻿using ResHub.ModelViews;
+﻿using Microsoft.AspNetCore.Identity;
+using ResHub.ModelViews;
 using System.ComponentModel.DataAnnotations;
 
 namespace ResHub.Models
@@ -33,5 +34,7 @@ namespace ResHub.Models
 
         [Required]
         public string RoomNumber { get; set; }
+        public bool Successful { get; set; }
+        public IEnumerable<IdentityError>? Errors { get; set; }
     }
 }

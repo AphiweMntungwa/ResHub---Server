@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace ResHub.ModelViews
 {
@@ -11,5 +12,7 @@ namespace ResHub.ModelViews
             RememberMe = rememberMe;
         }
         public bool RememberMe { get; set; }
+        public bool Successful { get; set; }
+        public SignInResult? SignInResult { get; set; }
     }
 }

@@ -10,6 +10,8 @@ namespace ResHub.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string? RoomNumber { get; set; }
+        public string? ConfirmationCode { get; set; }
+        public DateTime? ConfirmationCodeExpiration { get; set; }
 
 
         // Foreign key property
