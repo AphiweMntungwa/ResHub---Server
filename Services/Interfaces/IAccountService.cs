@@ -1,5 +1,6 @@
 ﻿using ResHub.Models;
 using ResHub.ModelViews;
+using System.Security.Claims;
 
 namespace ResHub.Services.Interfaces
 {
@@ -7,5 +8,6 @@ namespace ResHub.Services.Interfaces
     {
         Task<RegisterViewModel> CreateAccount(RegisterViewModel model);
         Task<LoginViewModel> Login(LoginViewModel model);
+        Task<UserInfoDto> GetCurrentUserAsync(ClaimsPrincipal userPrincipal);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlX.XDevAPI.Common;
+using NuGet.Common;
 using ResHub.Data;
 using ResHub.Models;
 using ResHub.ModelViews;
@@ -74,6 +75,17 @@ namespace ResHub.Controllers
 
             if(newUser.Successful)
             {
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true, // Ensures the cookie is accessible only by the server
+                    SameSite = SameSiteMode.None, // Allows cross-site requests
+                    Secure = true, // Ensures the cookie is sent over HTTPS only
+                    Expires = DateTime.Now.AddMinutes(30).ToUniversalTime() // Set expiration time for the cookie
+                };
+
+                // Append the cookie to the response
+                Response.Cookies.Append("jwt-token", newUser.AccessToken, cookieOptions);
+
                 return Ok(newUser);
             }
 
@@ -101,16 +113,31 @@ namespace ResHub.Controllers
             var result = await _accountService.Login(model);
             if(result.Successful)
             {
-                return Ok(result.AccessToken);
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true, // Ensures the cookie is accessible only by the server
+                    SameSite = SameSiteMode.None, // Allows cross-site requests
+                    Secure = true, // Ensures the cookie is sent over HTTPS only
+                    Expires = DateTime.Now.AddMinutes(30).ToUniversalTime() // Set expiration time for the cookie
+                };
+
+                // Append the cookie to the response
+                Response.Cookies.Append("jwt-token", result.AccessToken, cookieOptions);
+
+                return Ok(result);
             }
 
             if (result.SignInResult.IsLockedOut)
             {
-                return Forbid();
+                return Unauthorized("Your Account has been locked out");
             }
             if (result.SignInResult.IsNotAllowed)
             {
                 return Unauthorized("Verify Your Email");
+            }
+            if (!result.SignInResult.Succeeded)
+            {
+                return Unauthorized("Wrong Email or Password");
             }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -161,14 +188,14 @@ namespace ResHub.Controllers
         [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var userDto = await _accountService.GetCurrentUserAsync(User);
 
-            if (user == null)
+            if (userDto == null)
             {
                 return NotFound();
             }
 
-            return Ok(user);
+            return Ok(userDto);
         }
 
         private bool StudentResidentExists(string id)

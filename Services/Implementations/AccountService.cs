@@ -8,24 +8,30 @@ using ResHub.Models;
 using ResHub.Services.Interfaces;
 using ResHub.ModelViews;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace ResHub.Services.Implementations
 {
     public class AccountService: IAccountService
     {
-
         private readonly ApplicationDbContext _context;
         private readonly IJwtTokenService _jwtTokenService;
         private readonly UserManager<StudentResident> _userManager;
         private readonly SignInManager<StudentResident> _signInManager;
+        private readonly IEmailService _emailService;
 
-        public AccountService(ApplicationDbContext context, IJwtTokenService jwtTokenService, UserManager<StudentResident> userManager, SignInManager<StudentResident> signInManager)
+        public AccountService(ApplicationDbContext context, IJwtTokenService jwtTokenService, UserManager<StudentResident> userManager, SignInManager<StudentResident> signInManager, IEmailService emailService)
         {
             _context = context;
             _jwtTokenService = jwtTokenService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
+
         public async Task<RegisterViewModel> CreateAccount(RegisterViewModel model)
         {
             var user = new StudentResident(model.StudentNumber, model.FirstName, model.LastName, model.Email, model.UserName, model.ResidenceId, model.RoomNumber);
@@ -37,27 +43,29 @@ namespace ResHub.Services.Implementations
                 // Generate confirmation code
                 var confirmationCode = GenerateConfirmationCode(); // Implement this method to generate a code
                 user.ConfirmationCode = confirmationCode;
-                user.ConfirmationCodeExpiration = DateTime.UtcNow.AddHours(1); // Code valid for 1 hour
+                user.ConfirmationCodeExpiration = DateTime.UtcNow.AddHours(3); // Code valid for 1 hour
 
                 // Update user with confirmation code
                 await _userManager.UpdateAsync(user);
 
                 // Send email with confirmation code
-                //await SendConfirmationEmail(user.Email, confirmationCode); // Implement this method to send email
+                //await SendConfirmationEmail(user.Email, confirmationCode);
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 // Generate the JWT token
                 var token = _jwtTokenService.GenerateToken(user.Id);
                 model.AccessToken = token;
                 model.Successful = true;
-                // Return the token along with the user data
 
+                // Return the token along with the user data
                 return model;
             }
             model.Successful = false;
             model.Errors = result.Errors;
             return model;
         }
+
+
         public async Task<LoginViewModel> Login(LoginViewModel model)
         {
 
@@ -77,6 +85,36 @@ namespace ResHub.Services.Implementations
             model.SignInResult = result;
             return model;
         }
+
+        public async Task<UserInfoDto> GetCurrentUserAsync(ClaimsPrincipal userPrincipal)
+        {
+            var userId = _userManager.GetUserId(userPrincipal);
+
+            var user = await _userManager.Users
+                .Include(u => u.Residence) // Assuming Residence is the navigation property
+                .Where(u => u.Id == userId)
+                .Select(u => new UserInfoDto
+                {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    FullName = u.FirstName + " " + u.LastName,
+                    Email = u.Email,
+                    ResidenceId = u.ResidenceId,
+                    ResidenceName = u.Residence.Name // Assuming Residence has a Name property
+                })
+                .FirstOrDefaultAsync();
+
+            return user;
+        }
+
+
+
+
+
+
+
+
+        //HELPER METHODS
         private string GenerateConfirmationCode()
         {
             // Implement your code generation logic here
@@ -85,29 +123,11 @@ namespace ResHub.Services.Implementations
 
         private async Task SendConfirmationEmail(string email, string confirmationCode)
         {
-            // Implement your email sending logic here
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Reshub", "bongumusaayeza@gmail.com"));
-            message.To.Add(new MailboxAddress("", email));
-            message.Subject = "Email Confirmation";
-            message.Body = new TextPart("plain")
-            {
-                Text = $"Your confirmation code is {confirmationCode}"
-            };
+            // Use your EmailService to send the confirmation email
+            var subject = "Email Confirmation for the ResHub System";
+            var body = $"Your confirmation code is {confirmationCode}";
 
-            using (var client = new SmtpClient())
-            {
-                // Replace the placeholders with your actual SMTP server configuration
-                var smtpServer = "smtp.gmail.com";
-                var smtpPort = 587;
-                var smtpUsername = "bongumusaayeza@gmail.com";
-                var smtpPassword = "Bongumusa2004";
-
-                client.Connect(smtpServer, smtpPort, false);
-                client.Authenticate(smtpUsername, smtpPassword);
-                await client.SendAsync(message);
-                client.Disconnect(true);
-            }
+            await _emailService.SendEmailAsync(email, subject, body);
         }
     }
 }

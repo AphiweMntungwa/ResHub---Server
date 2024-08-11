@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ResHub.Data;
 using ResHub.Models;
 using ResHub.Services.Implementations;
@@ -24,6 +25,7 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 // Register JwtSettings in the DI container
 builder.Services.Configure<ResHub.ModelViews.JwtSettings>(jwtSettings);
 
+
 // Extract individual JWT settings for immediate use
 var secretKey = jwtSettings["SecretKey"];
 var issuer = jwtSettings["Issuer"];
@@ -39,7 +41,7 @@ builder.Services.AddControllers()
 // Configure Identity
 builder.Services.AddIdentity<StudentResident, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = true;
+    //options.SignIn.RequireConfirmedAccount = true;
     options.User.RequireUniqueEmail = true;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -53,12 +55,12 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
+    options.Password.RequiredLength = 7;
     options.Password.RequiredUniqueChars = 1;
 
     // Lockout settings.
     //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    //options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.MaxFailedAccessAttempts = 5;
     //options.Lockout.AllowedForNewUsers = true;
 
     // User settings.
@@ -91,6 +93,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+//Add Email Service from SendGrid
+builder.Services.AddTransient<IEmailService, EmailService>();
+
 // Add Authorization
 builder.Services.AddAuthorization();
 
@@ -107,7 +112,8 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins("http://localhost:3000")
                    .AllowAnyHeader()
-                   .AllowAnyMethod();
+                   .AllowAnyMethod()
+                   .AllowCredentials();
         });
 });
 
@@ -115,13 +121,54 @@ builder.Services.AddCors(options =>
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
 
 // Register your services
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
+app.UseMiddleware<JwtTokenMiddleware>();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
+        c.RoutePrefix = string.Empty;
+    });
+}
 
 // Use the CORS policy
 app.UseCors("AllowLocalhost3000");

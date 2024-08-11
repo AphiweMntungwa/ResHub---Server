@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ResHub.Data;
 using ResHub.Models;
@@ -6,6 +7,7 @@ using ResHub.Services.Interfaces;
 
 namespace ResHub.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class EventsController : Controller
