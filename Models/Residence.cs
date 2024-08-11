@@ -19,7 +19,7 @@ namespace ResHub.Models
 
         //foreign keys
         public ICollection<StudentResident>? StudentResidents { get; set; }
-        public ICollection<EventResidence>? EventResidences { get; set; }
+        public ICollection<Events>? Events { get; set; }
 
         public Residence(string name, string address, int capacity)
         {

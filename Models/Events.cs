@@ -20,7 +20,11 @@ namespace ResHub.Models
 
         public EventTypes Type { get; set; }
         public DateTime DateOfEvent { get; set; }
-        public ICollection<EventResidence>? EventResidences { get; set; }
+
+        // Foreign key property
+        public int? ResidenceId { get; set; }
+        public Residence? Residence { get; set; }
+
 
         // Constructor to initialize fields
         public Events(string eventName, EventTypes type, DateTime dateOfEvent)

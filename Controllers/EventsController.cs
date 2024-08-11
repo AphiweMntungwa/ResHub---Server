@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ResHub.Data;
 using ResHub.Models;
+using ResHub.ModelViews;
 using ResHub.Services.Interfaces;
 
 namespace ResHub.Controllers
@@ -13,47 +15,33 @@ namespace ResHub.Controllers
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
+        private readonly UserManager<StudentResident> _userManager;
 
-        public EventsController(IEventService eventService)
+
+        public EventsController(IEventService eventService, UserManager<StudentResident> userManager)
         {
             _eventService = eventService;
+            _userManager = userManager;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Events>>> GetAll()
         {
-            try
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                var events = await _eventService.GetAllEvents();
-                return Ok(events);
+                return Unauthorized();
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
+
+            var residenceId = user.ResidenceId;
+          
+            // Fetch events for the user's residence
+            var events = await _eventService.GetAllEvents(residenceId);
+
+            return Ok(events);
+
         }
 
-
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Events>>> Get()
-        //{
-        //    try
-        //    {
-        //        var events = await _context.Events
-        //            .Include(r => r.EventResidences)
-        //            .ThenInclude(er => er.Residence.Name)
-        //            .ToListAsync();
-
-        //        return Ok(events);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the error (you can use any logging framework or method)
-        //        Console.WriteLine($"An error occurred: {ex.Message}");
-        //        return StatusCode(500, "Internal server error");
-        //    }
-        //}
 
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] EventLoad Event)
@@ -66,8 +54,7 @@ namespace ResHub.Controllers
             try
             {
                 // Create the event
-                var newEvent = new Events(Event.EventName, Event.Type, Event.DateOfEvent);
-                var createdEvent = await _eventService.CreateEvent(newEvent, Event.ResId);
+                var createdEvent = await _eventService.CreateEvent(Event);
 
                 return Ok(createdEvent);
             }
@@ -77,43 +64,6 @@ namespace ResHub.Controllers
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
-        }
-        //[HttpPost]
-        //public async Task<IActionResult> Post([FromBody] EventLoad Event)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    // Create the event
-        //    var newEvent = new Events(Event.EventName, Event.Type, Event.DateOfEvent);
-        //    _context.Events.Add(newEvent);
-        //    await _context.SaveChangesAsync();
-
-        //    if (Event.ResId != null && Event.ResId.Any())
-        //    {
-        //        foreach (var resId in Event.ResId)
-        //        {
-        //            var eventResidence = new EventResidence
-        //            {
-        //                EventId = newEvent.Id,
-        //                ResidenceId = resId
-        //            };
-        //            _context.EventResidents.Add(eventResidence);
-        //        }
-        //        await _context.SaveChangesAsync();
-        //    }
-
-        //    return Ok(newEvent); // Return the created residence
-        //}
-
-        public class EventLoad
-        {
-            public string EventName { get; set; }
-            public Events.EventTypes Type { get; set; }
-            public DateTime DateOfEvent { get; set; }
-            public List<int>? ResId { get; set; }
         }
     }
 }

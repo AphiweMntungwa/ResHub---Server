@@ -1,10 +1,11 @@
 ﻿using ResHub.Models;
+using ResHub.ModelViews;
 
 namespace ResHub.Services.Interfaces
 {
     public interface IEventService
     {
-        Task<IEnumerable<Events>> GetAllEvents();
-        Task<Events> CreateEvent(Events newEvent, List<int> Ids);
+        Task<IEnumerable<Events>> GetAllEvents(int? resId);
+        Task<Events> CreateEvent(EventLoad Event);
     }
 }
