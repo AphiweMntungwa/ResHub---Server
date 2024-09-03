@@ -14,6 +14,7 @@ namespace ResHub.Data
 
         public DbSet<Residence> Residence { get; set; }
         public DbSet<Events> Events { get; set; }   
+        public DbSet<Message> Messages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

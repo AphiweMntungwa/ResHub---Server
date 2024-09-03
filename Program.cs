@@ -155,6 +155,7 @@ builder.Services.AddSwaggerGen(c =>
 // Register your services
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 var app = builder.Build();
 app.UseMiddleware<JwtTokenMiddleware>();

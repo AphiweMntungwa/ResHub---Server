@@ -7,5 +7,6 @@ namespace ResHub.Services.Interfaces
     {
         Task<IEnumerable<Events>> GetAllEvents(int? resId);
         Task<Events> CreateEvent(EventLoad Event);
+        Task<Events> GetEventDetailsAsync(int eventId);
     }
 }

@@ -36,7 +36,8 @@ namespace ResHub.Services.Implementations
             (
                 newEvent.EventName,
                 newEvent.Type,
-                newEvent.DateOfEvent
+                newEvent.DateOfEvent,
+                newEvent.Description
             )
             {
                 ResidenceId = user.ResidenceId // Use the logged-in user's residence ID
@@ -45,6 +46,20 @@ namespace ResHub.Services.Implementations
             _context.Events.Add(thisEvent);
             await _context.SaveChangesAsync();
             return thisEvent;
+        }
+
+        public async Task<Events> GetEventDetailsAsync(int eventId)
+        {
+            // Fetch the event details from the database using the eventId
+            var eventDetails = await _context.Events
+                .FirstOrDefaultAsync(e => e.Id == eventId);
+
+            if (eventDetails == null)
+            {
+                throw new Exception("Event not found");
+            }
+
+            return eventDetails;
         }
     }
 }

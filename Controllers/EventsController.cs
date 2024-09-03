@@ -42,6 +42,20 @@ namespace ResHub.Controllers
 
         }
 
+        [HttpGet("{eventId}")]
+        public async Task<IActionResult> GetEventDetails(int eventId)
+        {
+            try
+            {
+                var eventDetails = await _eventService.GetEventDetailsAsync(eventId);
+                return Ok(eventDetails);
+            }
+            catch (Exception ex)
+            {
+                // Return a 404 status if the event is not found
+                return NotFound(new { message = ex.Message });
+            }
+        }
 
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] EventLoad Event)

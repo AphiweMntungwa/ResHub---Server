@@ -17,7 +17,7 @@ namespace ResHub.Models
             Formal,
             Religious
         }
-
+        public string Description { get; set; }
         public EventTypes Type { get; set; }
         public DateTime DateOfEvent { get; set; }
 
@@ -27,11 +27,12 @@ namespace ResHub.Models
 
 
         // Constructor to initialize fields
-        public Events(string eventName, EventTypes type, DateTime dateOfEvent)
+        public Events(string eventName, EventTypes type, DateTime dateOfEvent, string description)
         {
             EventName = eventName ?? throw new ArgumentNullException(nameof(eventName));
             Type = type;
             DateOfEvent = dateOfEvent;
+            Description = description;
         }
     }
 }
