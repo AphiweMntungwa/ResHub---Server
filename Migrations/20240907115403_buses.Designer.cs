@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ResHub.Data;
 
@@ -10,9 +11,11 @@ using ResHub.Data;
 namespace ResHub.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240907115403_buses")]
+    partial class buses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,12 +171,14 @@ namespace ResHub.Migrations
 
                     b.Property<string>("LastUpdatedByUserId")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("ResidenceId")
                         .HasColumnType("int");
 
                     b.HasKey("BusId");
+
+                    b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("ResidenceId");
 
@@ -439,6 +444,12 @@ namespace ResHub.Migrations
 
             modelBuilder.Entity("ResHub.Models.Bus", b =>
                 {
+                    b.HasOne("ResHub.Models.StudentResident", "StudentResident")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ResHub.Models.Residence", "Residence")
                         .WithMany()
                         .HasForeignKey("ResidenceId")
@@ -446,6 +457,8 @@ namespace ResHub.Migrations
                         .IsRequired();
 
                     b.Navigation("Residence");
+
+                    b.Navigation("StudentResident");
                 });
 
             modelBuilder.Entity("ResHub.Models.DepartureTime", b =>
