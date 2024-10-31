@@ -79,5 +79,56 @@ namespace ResHub.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpPut("{eventId}")]
+        public async Task<IActionResult> Update(int eventId, [FromBody] EventLoad eventUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                // Update the event
+                var result = await _eventService.UpdateEvent(eventId, eventUpdate);
+                if (result)
+                {
+                    return NoContent(); // Indicate success without content
+                }
+                else
+                {
+                    return NotFound(new { message = "Event not found" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete("{eventId}")]
+        public async Task<IActionResult> Delete(int eventId)
+        {
+            try
+            {
+                var result = await _eventService.DeleteEvent(eventId);
+                if (result)
+                {
+                    return NoContent(); // Indicate success without content
+                }
+                else
+                {
+                    return NotFound(new { message = "Event not found" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
     }
 }

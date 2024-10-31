@@ -63,5 +63,31 @@ namespace ResHub.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpDelete("{busId}")]
+        public async Task<IActionResult> DeleteBus(int busId)
+        {
+            try
+            {
+                await _busService.DeleteBusAsync(busId);
+                return Ok("Bus deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpPut("{busId}")]
+        public async Task<IActionResult> UpdateBus(int busId, [FromBody] BusUpdateDto busUpdateDto)
+        {
+            var result = await _busService.UpdateBusAsync(busId, busUpdateDto);
+
+            if (result)
+            {
+                return Ok();
+            }
+
+            return Unauthorized();
+        }
     }
 }
