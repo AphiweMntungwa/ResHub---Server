@@ -75,6 +75,8 @@ namespace ResHub.Controllers
 
             if(newUser.Successful)
             {
+               
+
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true, // Ensures the cookie is accessible only by the server

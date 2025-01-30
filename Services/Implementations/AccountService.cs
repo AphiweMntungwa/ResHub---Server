@@ -32,14 +32,20 @@ namespace ResHub.Services.Implementations
             _emailService = emailService;
         }
 
-        public async Task<RegisterViewModel> CreateAccount(RegisterViewModel model)
+        public async Task<CreateAccountResponse> CreateAccount(RegisterViewModel model)
         {
+            // Determine the role before creating the user
+            var role = await DetermineUserRole(model.ResidenceId);
+
             var user = new StudentResident(model.StudentNumber, model.FirstName, model.LastName, model.Email, model.UserName, model.ResidenceId, model.RoomNumber);
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
+                // Assign role (Admin if first, otherwise Resident)
+                await _userManager.AddToRoleAsync(user, role);
+
                 // Generate confirmation code
                 var confirmationCode = GenerateConfirmationCode(); // Implement this method to generate a code
                 user.ConfirmationCode = confirmationCode;
@@ -54,17 +60,27 @@ namespace ResHub.Services.Implementations
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 // Generate the JWT token
                 var token = _jwtTokenService.GenerateToken(user.Id);
-                model.AccessToken = token;
-                model.Successful = true;
-
-                // Return the token along with the user data
-                return model;
+                return new CreateAccountResponse
+                {
+                    Successful = true,
+                    User = user,
+                    AccessToken = token
+                };
             }
-            model.Successful = false;
-            model.Errors = result.Errors;
-            return model;
+            return new CreateAccountResponse
+            {
+                Successful = false,
+                Errors = result.Errors
+            };
         }
 
+        private async Task<string> DetermineUserRole(int residenceId)
+        {
+            var hasExistingUsers = await _userManager.Users
+                .AnyAsync(u => u.ResidenceId == residenceId);
+
+            return hasExistingUsers ? "Resident" : "Admin";
+        }
 
         public async Task<LoginViewModel> Login(LoginViewModel model)
         {
@@ -131,3 +147,4 @@ namespace ResHub.Services.Implementations
         }
     }
 }
+

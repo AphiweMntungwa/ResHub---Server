@@ -158,7 +158,41 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IBusService, BusService>();
 
+async Task SeedRolesAsync(IServiceProvider serviceProvider)
+{
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<StudentResident>>();
+
+    // Roles to seed
+    string[] roles = { "Admin", "Resident", "EventsPlanner", "BusCoordinator", "SportsAnnouncer" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+            Console.WriteLine($"Role '{role}' created.");
+        }
+    }
+}
+
+
 var app = builder.Build();
+
+// Seed roles
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    try
+    {
+        await SeedRolesAsync(serviceProvider);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred while seeding roles: {ex.Message}");
+    }
+}
+
 app.UseMiddleware<JwtTokenMiddleware>();
 
 // Configure the HTTP request pipeline.
