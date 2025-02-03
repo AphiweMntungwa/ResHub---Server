@@ -157,6 +157,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IBusService, BusService>();
+builder.Services.AddScoped<IRolesService, RolesService>();
 
 async Task SeedRolesAsync(IServiceProvider serviceProvider)
 {

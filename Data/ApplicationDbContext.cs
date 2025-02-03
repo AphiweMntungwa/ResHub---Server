@@ -17,6 +17,9 @@ namespace ResHub.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Bus> Bus { get; set; }
         public DbSet<DepartureTime> DepartureTime { get; set; }
+        public DbSet<Poll> Polls { get; set; }
+        public DbSet<Vote> Votes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
