@@ -29,7 +29,7 @@ namespace ResHub.Controllers
 
         // Open a voting poll
         [HttpPost("polls/open")]
-        public async Task<IActionResult> OpenPoll([FromBody] OpenPollRequest request)
+        public async Task<IActionResult> OpenPoll([FromBody] PollRequestViewModel request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _rolesService.OpenPollAsync(userId, request);
@@ -38,7 +38,7 @@ namespace ResHub.Controllers
 
         // Vote in an open poll
         [HttpPost("polls/vote")]
-        public async Task<IActionResult> Vote([FromBody] VoteRequest request)
+        public async Task<IActionResult> Vote([FromBody] VoteRequestViewModel request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _rolesService.CastVoteAsync(userId, request);
