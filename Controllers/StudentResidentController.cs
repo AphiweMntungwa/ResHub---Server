@@ -85,8 +85,9 @@ namespace ResHub.Controllers
                     Expires = DateTime.Now.AddMinutes(30).ToUniversalTime() // Set expiration time for the cookie
                 };
 
+                
                 // Append the cookie to the response
-                Response.Cookies.Append("jwt-token", newUser.AccessToken, cookieOptions);
+                Response.Cookies.Append("jwt-token", await newUser.AccessToken, cookieOptions);
 
                 return Ok(newUser);
             }
@@ -124,7 +125,7 @@ namespace ResHub.Controllers
                 };
 
                 // Append the cookie to the response
-                Response.Cookies.Append("jwt-token", result.AccessToken, cookieOptions);
+                Response.Cookies.Append("jwt-token", await result.AccessToken, cookieOptions);
 
                 return Ok(result);
             }

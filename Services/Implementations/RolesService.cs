@@ -4,7 +4,7 @@ using ResHub.Models;
 using ResHub.ModelViews;
 using ResHub.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
+using System.Security.Claims;
 
 namespace ResHub.Services.Implementations
 {
@@ -12,18 +12,29 @@ namespace ResHub.Services.Implementations
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<StudentResident> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public RolesService(ApplicationDbContext context, UserManager<StudentResident> userManager)
+        public RolesService(ApplicationDbContext context, UserManager<StudentResident> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<StudentResidentViewModel> GetAdminAsync(int residenceId)
+        public async Task<List<StudentResidentViewModel>> GetAdminsAsync()
         {
-            var admin = await _userManager.Users.FirstOrDefaultAsync(u => u.ResidenceId == residenceId && _context.UserRoles.Any(r => r.UserId == u.Id && r.RoleId == "Admin"));
-            return admin != null ? new StudentResidentViewModel(admin) : null;
+            var user = await _userManager.GetUserAsync(_httpContextAccessor?.HttpContext?.User);
+
+            var admins = await (from u in _userManager.Users
+                                join ur in _context.UserRoles on u.Id equals ur.UserId
+                                join r in _context.Roles on ur.RoleId equals r.Id
+                                where u.ResidenceId == user.ResidenceId && r.Name == "Admin"
+                                select new StudentResidentViewModel(u))
+                                .ToListAsync();
+
+            return admins;
         }
+
 
         public async Task<PollResponseViewModel> OpenPollAsync(string userId, PollRequestViewModel request)
         {

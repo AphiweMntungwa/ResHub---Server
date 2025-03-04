@@ -20,10 +20,10 @@ namespace ResHub.Controllers
         }
 
         // Get admin info
-        [HttpGet("admin/{residenceId}")]
-        public async Task<IActionResult> GetAdmin(int residenceId)
+        [HttpGet("admins")]
+        public async Task<IActionResult> GetAdmins()
         {
-            var admin = await _rolesService.GetAdminAsync(residenceId);
+            var admin = await _rolesService.GetAdminsAsync();
             return admin != null ? Ok(admin) : NotFound("No admin found.");
         }
 

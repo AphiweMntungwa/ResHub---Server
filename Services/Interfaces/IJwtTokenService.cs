@@ -2,6 +2,6 @@
 {
     public interface IJwtTokenService
     {
-            string GenerateToken(string userId);
+            Task<string> GenerateToken(string userId, int residenceId);
     }
 }

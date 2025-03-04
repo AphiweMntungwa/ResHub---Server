@@ -7,7 +7,7 @@ namespace ResHub.ModelViews
     {
         public bool Successful { get; set; }
         public StudentResident User { get; set; }
-        public string AccessToken { get; set; }
+        public Task<string> AccessToken { get; set; }
         public IEnumerable<IdentityError> Errors { get; set; }
     }
 }

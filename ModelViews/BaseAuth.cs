@@ -13,7 +13,7 @@ namespace ResHub.ModelViews
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-        public string? AccessToken { get; set; }
+        public Task<string>? AccessToken { get; set; }
 
         protected BaseAuth(string email, string password)
         {

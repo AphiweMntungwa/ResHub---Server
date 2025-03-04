@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ResHub.Models;
 using ResHub.ModelViews;
 using ResHub.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,7 +21,7 @@ namespace ResHub.Services.Implementations
             _jwtSettings = jwtSettings.Value;
         }
 
-        public string GenerateToken(string userId)
+        public async Task<string> GenerateToken(string userId, int residenceId)
         {
             var secretKey = _jwtSettings.SecretKey;
             var issuer = _jwtSettings.Issuer;
@@ -31,8 +33,9 @@ namespace ResHub.Services.Implementations
             var claims = new[]
             {
             new Claim(JwtRegisteredClaimNames.Sub, userId),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim("ResidenceId", residenceId.ToString())
+            };
 
             var token = new JwtSecurityToken(
                 issuer: issuer,

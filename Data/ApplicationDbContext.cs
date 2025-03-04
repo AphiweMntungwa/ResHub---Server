@@ -19,6 +19,8 @@ namespace ResHub.Data
         public DbSet<DepartureTime> DepartureTime { get; set; }
         public DbSet<Poll> Polls { get; set; }
         public DbSet<Vote> Votes { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Love> Loves { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

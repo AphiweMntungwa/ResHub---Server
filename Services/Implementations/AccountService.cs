@@ -59,7 +59,7 @@ namespace ResHub.Services.Implementations
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 // Generate the JWT token
-                var token = _jwtTokenService.GenerateToken(user.Id);
+                var token = _jwtTokenService.GenerateToken(user.Id, user.ResidenceId.GetValueOrDefault(0));
                 return new CreateAccountResponse
                 {
                     Successful = true,
@@ -91,7 +91,7 @@ namespace ResHub.Services.Implementations
             {
                 // Generate the JWT token
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                var token = _jwtTokenService.GenerateToken(user.Id); // Assuming you have a method like GenerateToken in your JwtTokenService that takes userId
+                var token = _jwtTokenService.GenerateToken(user.Id, user.ResidenceId.GetValueOrDefault(0)); // Assuming you have a method like GenerateToken in your JwtTokenService that takes userId
                 model.AccessToken = token;
                 model.Successful = true;
                 return model;
