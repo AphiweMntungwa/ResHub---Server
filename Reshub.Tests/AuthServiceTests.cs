@@ -29,11 +29,11 @@ namespace Reshub.Tests
         public AccountServiceTests()
         {
 
-            // Set up in-memory EF Core context
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
-                .Options;
-            _context = new ApplicationDbContext(options);
+            //// Set up in-memory EF Core context
+            //var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            //    .UseInMemoryDatabase(databaseName: "TestDb")
+            //    .Options;
+            //_context = new ApplicationDbContext(options);
 
 
             // Required setup for UserManager and SignInManager mocks
