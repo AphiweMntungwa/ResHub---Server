@@ -119,8 +119,8 @@ namespace ResHub.Controllers
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true, // Ensures the cookie is accessible only by the server
-                    SameSite = SameSiteMode.None, // Allows cross-site requests
-                    Secure = true, // Ensures the cookie is sent over HTTPS only
+                    SameSite = SameSiteMode.Lax, // Allows cross-site requests
+                    Secure = false, // Ensures the cookie is sent over HTTPS only
                     Expires = DateTime.Now.AddMinutes(30).ToUniversalTime() // Set expiration time for the cookie
                 };
 
